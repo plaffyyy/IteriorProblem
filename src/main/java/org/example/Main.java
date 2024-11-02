@@ -15,14 +15,16 @@ public final class Main {
         double[][] A = input.inputConstrainFunction();
         double[] B = input.inputRightHandSide();
         InteriorPoint interiorPointClass = new InteriorPoint(C, A);
-        double[] X = {1, 1, 1, 315,181,169};
-        interiorPointClass.interiorPoint(X, 0,0);
+//        double[] X = Matrix.solveNonNegativeLeastSquares(A,B);
+        double[] X = input.inputInitialValues();
         interiorPointClass.interiorPoint(X, 0);
 
-        Algorithm algorithm = new Algorithm(c, a, b);
-        SimplexResult result = algorithm.simplex(a, c, b);
-        Output output = new Output(result, System.out);
-        output.printResult();
+//        interiorPointClass.interiorPoint(X, 0);
+
+//        Algorithm algorithm = new Algorithm(c, a, b);
+//        SimplexResult result = algorithm.simplex(a, c, b);
+//        Output output = new Output(result, System.out);
+//        output.printResult();
     }
 }
 
@@ -40,28 +42,33 @@ class InteriorPoint {
     }
 
 
-    public void interiorPoint(double[] X, double normX,int count) {
-        count ++;
-        double[] Xprev = X;
-        normX = Matrix.norm(X);
-        double[][] D = Matrix.createDiagonal(X);
-        double[][] ATilde = Matrix.multiplyMatrix(A, D);
-        double[] Ctilde = Matrix.multiplyMatrix(D, C);
-        double[][] ATildeTranspose = Matrix.Transpose(ATilde);
-        double[][] ATilxATT = Matrix.multiplyMatrix(ATilde, ATildeTranspose);
-        double[][] inverseMatrix = Matrix.inverseMatrix(Matrix.multiplyMatrix(ATilde, ATildeTranspose));
-        double[][] calculateA = Matrix.multiplyMatrix(ATildeTranspose, Matrix.multiplyMatrix(inverseMatrix, ATilde));
-        double[][] P = Matrix.subtractFromIdentity(calculateA);
-        double[] Cp = Matrix.multiplyMatrix(P, Ctilde);
-        double[] Xunit = new double[X.length];
-        Arrays.fill(Xunit, 1);
-        double[] XTilde = Matrix.sumMatrix(Xunit, Matrix.multiplyOnConstant(Cp, a / findV(Cp)));
-        X = Matrix.multiplyMatrix(D, XTilde);
-//            System.out.println(Arrays.toString(X));
-        if (Matrix.findP2Norm(X, Xprev) > 0.001 ) {
-            System.out.println(Arrays.toString(X));
-            interiorPoint(X, normX,count);
+    public void interiorPoint(double[] X, double normX) {
+        int count = 0;
+        double[] result = new double[X.length];
+        while(true) {
+            count++;
+            double[] Xprev = X;
+            normX = Matrix.norm(X);
+            double[][] D = Matrix.createDiagonal(X);
+            double[][] ATilde = Matrix.multiplyMatrix(A, D);
+            double[] Ctilde = Matrix.multiplyMatrix(D, C);
+            double[][] ATildeTranspose = Matrix.Transpose(ATilde);
+            double[][] ATilxATT = Matrix.multiplyMatrix(ATilde, ATildeTranspose);
+            double[][] inverseMatrix = Matrix.inverseMatrix(Matrix.multiplyMatrix(ATilde, ATildeTranspose));
+            double[][] calculateA = Matrix.multiplyMatrix(ATildeTranspose, Matrix.multiplyMatrix(inverseMatrix, ATilde));
+            double[][] P = Matrix.subtractFromIdentity(calculateA);
+            double[] Cp = Matrix.multiplyMatrix(P, Ctilde);
+            double[] Xunit = new double[X.length];
+            Arrays.fill(Xunit, 1);
+            double[] XTilde = Matrix.sumMatrix(Xunit, Matrix.multiplyOnConstant(Cp, a / findV(Cp)));
+            X = Matrix.multiplyMatrix(D, XTilde);
+            result = X;
+            if (Matrix.findP2Norm(X, Xprev) < 0.1 || count>5) {
+                break;
+            }
+
         }
+        System.out.println("Result: " + Arrays.toString(result));
 
     }
 
@@ -90,6 +97,16 @@ class Input {
 
     public double[] inputObjectiveFunction() throws IOException {
         out.print("A vector of coefficients of objective function - C: ");
+        String[] coeffStrings = reader.readLine().split(" ");
+        double[] c = new double[coeffStrings.length];
+        for (int i = 0; i < coeffStrings.length; i++) {
+            c[i] = Double.parseDouble(coeffStrings[i]);
+        }
+        this.c = c;
+        return c;
+    }
+    public double[] inputInitialValues() throws IOException {
+        out.print("A vector of coefficients - X: ");
         String[] coeffStrings = reader.readLine().split(" ");
         double[] c = new double[coeffStrings.length];
         for (int i = 0; i < coeffStrings.length; i++) {

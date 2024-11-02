@@ -68,10 +68,13 @@ class InteriorPoint {
             }
 
         }
+        double value = 0;
+        for (int i = 0; i < result.length; i++) {
+            value += C[i] * result[i];
+        }
         System.out.println("Result: " + Arrays.toString(result));
-
+        System.out.print("Approximate value: " + value);
     }
-
 
     public double findV(double[] Cp) {
         double v = 1;
@@ -96,6 +99,7 @@ class Input {
     }
 
     public double[] inputObjectiveFunction() throws IOException {
+        out.print("All vector input in equation form");
         out.print("A vector of coefficients of objective function - C: ");
         String[] coeffStrings = reader.readLine().split(" ");
         double[] c = new double[coeffStrings.length];
@@ -106,6 +110,7 @@ class Input {
         return c;
     }
     public double[] inputInitialValues() throws IOException {
+        out.print("Input coordinates ");
         out.print("A vector of coefficients - X: ");
         String[] coeffStrings = reader.readLine().split(" ");
         double[] c = new double[coeffStrings.length];

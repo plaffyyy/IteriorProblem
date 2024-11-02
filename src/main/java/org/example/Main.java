@@ -15,16 +15,14 @@ public final class Main {
         double[][] A = input.inputConstrainFunction();
         double[] B = input.inputRightHandSide();
         InteriorPoint interiorPointClass = new InteriorPoint(C, A);
-//        double[] X = Matrix.solveNonNegativeLeastSquares(A,B);
         double[] X = {1, 1, 1, 315,181,169};
         interiorPointClass.interiorPoint(X, 0,0);
+        interiorPointClass.interiorPoint(X, 0);
 
-//        interiorPointClass.interiorPoint(X, 0);
-
-//        Algorithm algorithm = new Algorithm(c, a, b);
-//        SimplexResult result = algorithm.simplex(a, c, b);
-//        Output output = new Output(result, System.out);
-//        output.printResult();
+        Algorithm algorithm = new Algorithm(c, a, b);
+        SimplexResult result = algorithm.simplex(a, c, b);
+        Output output = new Output(result, System.out);
+        output.printResult();
     }
 }
 
